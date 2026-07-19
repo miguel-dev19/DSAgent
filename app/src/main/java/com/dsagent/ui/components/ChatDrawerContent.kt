@@ -9,41 +9,109 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.dsagent.ui.theme.*
+import com.dsagent.ui.theme.DarkText
+import com.dsagent.ui.theme.ErrorRed
+import com.dsagent.ui.theme.GrayText
+import com.dsagent.ui.theme.White
 
 @Composable
-fun ChatDrawerContent(userName: String, accountType: String, chatHistory: List<String>, onChatSelected: (Int) -> Unit) {
-    ModalDrawerSheet(Modifier.width(300.dp), White) {
-        Surface(Modifier.fillMaxWidth().padding(16.dp), Color(0xFFF8FAFC), RoundedCornerShape(16.dp)) {
-            Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+fun ChatDrawerContent(
+    userName: String,
+    accountType: String,
+    chatHistory: List<String> = emptyList(),
+    onChatSelected: (Int) -> Unit = {}
+) {
+    ModalDrawerSheet(
+        modifier = Modifier.width(300.dp),
+        drawerContainerColor = White
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            color = Color(0xFFF8FAFC),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 AvatarGenerator(userName)
-                Spacer(Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text(userName.ifEmpty { "Usuario" }, fontWeight = FontWeight.SemiBold, color = DarkText)
-                    Text(accountType.ifEmpty { "Free" }, style = MaterialTheme.typography.labelSmall, color = GrayText)
+                    Text(
+                        text = userName.ifEmpty { "Usuario" },
+                        fontWeight = FontWeight.SemiBold,
+                        color = DarkText
+                    )
+                    Text(
+                        text = accountType.ifEmpty { "Free" },
+                        style = MaterialTheme.typography.labelSmall,
+                        color = GrayText
+                    )
                 }
             }
         }
-        Divider(Modifier.padding(horizontal = 16.dp), Color(0xFFF1F5F9))
+        
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = Color(0xFFF1F5F9)
+        )
+        
         if (chatHistory.isEmpty()) {
-            Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Rounded.ChatBubbleOutline, null, Modifier.size(48.dp), Color(0xFFCBD5E1))
-                    Text("Sin conversaciones", color = Color(0xFFCBD5E1))
+                    Icon(
+                        Icons.Rounded.ChatBubbleOutline,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = Color(0xFFCBD5E1)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Sin conversaciones",
+                        color = Color(0xFFCBD5E1)
+                    )
                 }
             }
         } else {
-            chatHistory.forEachIndexed { i, chat ->
-                TextButton(onClick = { onChatSelected(i) }, modifier = Modifier.fillMaxWidth()) { Text(chat, color = DarkText) }
+            chatHistory.forEachIndexed { index, chat ->
+                TextButton(
+                    onClick = { onChatSelected(index) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(chat, color = DarkText)
+                }
             }
         }
-        Spacer(Modifier.weight(1f))
-        TextButton(onClick = {}, modifier = Modifier.fillMaxWidth().padding(8.dp)) {
-            Icon(Icons.Rounded.Logout, null, ErrorRed)
-            Spacer(Modifier.width(8.dp))
+        
+        Spacer(modifier = Modifier.weight(1f))
+        
+        HorizontalDivider(color = Color(0xFFF1F5F9))
+        
+        TextButton(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Icon(
+                Icons.Rounded.Logout,
+                contentDescription = null,
+                tint = ErrorRed
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text("Cerrar Sesión", color = ErrorRed)
         }
+        
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }

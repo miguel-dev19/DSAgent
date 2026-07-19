@@ -5,11 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
@@ -23,19 +22,44 @@ fun CodeBlock(code: String) {
     val clipboard = LocalClipboardManager.current
     
     Surface(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         color = CodeBackground,
         shape = RoundedCornerShape(12.dp)
     ) {
         Column {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = { clipboard.setText(AnnotatedString(code)); copied = true }) {
-                    Icon(if (copied) Icons.Rounded.Check else Icons.Rounded.ContentCopy, "Copiar", LightBlue, Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text(if (copied) "¡Copiado!" else "Copiar", color = LightBlue)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = {
+                    clipboard.setText(AnnotatedString(code))
+                    copied = true
+                }) {
+                    Icon(
+                        if (copied) Icons.Rounded.Check else Icons.Rounded.ContentCopy,
+                        contentDescription = "Copiar",
+                        tint = LightBlue,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        if (copied) "¡Copiado!" else "Copiar",
+                        color = LightBlue
+                    )
                 }
             }
-            Text(code, Modifier.horizontalScroll(rememberScrollState()).padding(16.dp), fontFamily = FontFamily.Monospace, color = White)
+            Text(
+                text = code,
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .padding(16.dp),
+                fontFamily = FontFamily.Monospace,
+                color = White
+            )
         }
     }
 }
