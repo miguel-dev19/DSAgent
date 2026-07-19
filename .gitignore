@@ -1,0 +1,14 @@
+.git-credentials
+.bash_history
+.cache/
+.config/
+.local/
+storage/
+temp/
+app/
+toDown/
+toDus-app/
+.gradle/
+build/
+*.jks
+*.key
