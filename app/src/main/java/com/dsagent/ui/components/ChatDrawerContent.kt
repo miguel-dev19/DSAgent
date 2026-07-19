@@ -56,7 +56,7 @@ fun ChatDrawerContent(
             }
         }
         
-        HorizontalDivider(
+        Divider(
             modifier = Modifier.padding(horizontal = 16.dp),
             color = Color(0xFFF1F5F9)
         )
@@ -95,7 +95,7 @@ fun ChatDrawerContent(
         
         Spacer(modifier = Modifier.weight(1f))
         
-        HorizontalDivider(color = Color(0xFFF1F5F9))
+        Divider(color = Color(0xFFF1F5F9))
         
         TextButton(
             onClick = {},

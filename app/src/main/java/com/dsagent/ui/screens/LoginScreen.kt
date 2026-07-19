@@ -4,9 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +28,12 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(48.dp))
-            Icon(Icons.Rounded.Psychology, null, Modifier.size(72.dp), LightBlue)
+            Icon(
+                imageVector = Icons.Rounded.Psychology,
+                contentDescription = null,
+                modifier = Modifier.size(72.dp),
+                tint = LightBlue
+            )
             Spacer(Modifier.height(24.dp))
             Text("Iniciar Sesión", style = MaterialTheme.typography.headlineMedium, color = DarkText)
             Spacer(Modifier.height(32.dp))
@@ -36,7 +41,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
                 value = email, onValueChange = { email = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Correo electrónico") },
-                leadingIcon = { Icon(Icons.Rounded.Email, null, tint = GrayText) },
+                leadingIcon = { Icon(Icons.Rounded.Email, contentDescription = null, tint = GrayText) },
                 shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
@@ -45,10 +50,14 @@ fun LoginScreen(onLoginSuccess: () -> Unit, onNavigateToRegister: () -> Unit) {
                 value = password, onValueChange = { password = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Contraseña") },
-                leadingIcon = { Icon(Icons.Rounded.Lock, null, tint = GrayText) },
+                leadingIcon = { Icon(Icons.Rounded.Lock, contentDescription = null, tint = GrayText) },
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(if (passwordVisible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility, null, GrayText)
+                        Icon(
+                            if (passwordVisible) Icons.Rounded.VisibilityOff else Icons.Rounded.Visibility,
+                            contentDescription = null,
+                            tint = GrayText
+                        )
                     }
                 },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
