@@ -45,7 +45,7 @@ fun ChatTopBar(
                                 Icons.Rounded.Add,
                                 contentDescription = null,
                                 tint = White,
-                                modifier = Modifier.requiredSize(12.dp)
+                                modifier = Modifier.size(12.dp)
                             )
                         }
                     }
