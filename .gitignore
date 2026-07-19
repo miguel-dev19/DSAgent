@@ -1,14 +1,26 @@
+# Secretos
 .git-credentials
+*.jks
+*.key
+*.keystore
+secrets.properties
+local.properties
+
+# Sistema
 .bash_history
 .cache/
 .config/
 .local/
+.wget-hsts
+.gitconfig
 storage/
 temp/
-app/
-toDown/
-toDus-app/
+
+# Gradle (solo archivos generados)
 .gradle/
-build/
-*.jks
-*.key
+*.iml
+.idea/
+
+# Build
+*/build/
+!gradle/wrapper/gradle-wrapper.jar
