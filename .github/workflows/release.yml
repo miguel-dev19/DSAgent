@@ -22,25 +22,11 @@ jobs:
     - name: 🔧 Setup Gradle
       uses: gradle/gradle-build-action@v2
       
-    - name: 📝 Decode Keystore
-      env:
-        ENCODED_STRING: ${{ secrets.KEYSTORE_BASE64 }}
-      run: echo $ENCODED_STRING | base64 -di > ${{ github.workspace }}/keystore.jks
-      
     - name: 🔨 Build Release APK
-      env:
-        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-      run: |
-        echo "RELEASE_STORE_FILE=${{ github.workspace }}/keystore.jks" >> local.properties
-        echo "RELEASE_STORE_PASSWORD=$KEYSTORE_PASSWORD" >> local.properties
-        echo "RELEASE_KEY_ALIAS=$KEY_ALIAS" >> local.properties
-        echo "RELEASE_KEY_PASSWORD=$KEY_PASSWORD" >> local.properties
-        ./gradlew assembleRelease
-        
+      run: chmod +x gradlew && ./gradlew assembleRelease
+      
     - name: 📱 Upload Release APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: DSAgent-Release
         path: app/build/outputs/apk/release/app-release.apk
