@@ -25,8 +25,8 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       
-    - name: Build Release APK
-      run: chmod +x gradlew && ./gradlew assembleRelease
+    - name: Build APK
+      run: chmod +x gradlew && ./gradlew assembleDebug
       
     - name: Get version name
       id: version
@@ -34,7 +34,6 @@ jobs:
         COMMIT_COUNT=$(git rev-list --count HEAD)
         SHORT_HASH=$(git rev-parse --short HEAD)
         echo "VERSION=v1.0.${COMMIT_COUNT}-${SHORT_HASH}" >> $GITHUB_OUTPUT
-        echo "DATE=$(date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
       
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -44,23 +43,11 @@ jobs:
         body: |
           ## DSAgent - Build Automatico
           
-          **Fecha:** ${{ steps.version.outputs.DATE }}
           **Commit:** ${{ github.sha }}
           
-          ### Incluye:
-          - Chat con streaming en tiempo real
-          - Pensamiento profundo (DeepThink)
-          - Busqueda inteligente
-          - Historial de conversaciones
-          - Tema oscuro
-          - Markdown en respuestas
-          - Comandos /clear y /retry
-          
-          ### Instalacion:
-          1. Descargar APK
-          2. Permitir instalaciones de fuentes desconocidas
-          3. Instalar y disfrutar
-        files: app/build/outputs/apk/release/app-release.apk
+          ### Descargar APK
+          El archivo APK esta en la seccion de Assets.
+        files: app/build/outputs/apk/debug/app-debug.apk
         draft: false
         prerelease: false
       env:
