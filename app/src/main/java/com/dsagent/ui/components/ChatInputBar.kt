@@ -114,7 +114,7 @@ fun ChatInputBar(
                     border = BorderStroke(1.dp, if (thinkingEnabled) LightBlue.copy(alpha = 0.4f) else GrayBorder)
                 ) {
                     Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.Psychology, null, Modifier.size(16.dp), tint = if (thinkingEnabled) LightBlue else GrayText)
+                        Icon(Icons.Outlined.Psychology, contentDescription = null, Modifier.size(16.dp), tint = if (thinkingEnabled) LightBlue else GrayText)
                         Spacer(Modifier.width(4.dp))
                         Text("Pensar", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Medium, color = if (thinkingEnabled) LightBlue else GrayText)
                     }
@@ -127,7 +127,7 @@ fun ChatInputBar(
                     border = BorderStroke(1.dp, if (searchEnabled) LightBlue.copy(alpha = 0.4f) else GrayBorder)
                 ) {
                     Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.Language, null, Modifier.size(16.dp), tint = if (searchEnabled) LightBlue else GrayText)
+                        Icon(Icons.Outlined.Language, contentDescription = null, Modifier.size(16.dp), tint = if (searchEnabled) LightBlue else GrayText)
                         Spacer(Modifier.width(4.dp))
                         Text("Buscar", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Medium, color = if (searchEnabled) LightBlue else GrayText)
                     }
