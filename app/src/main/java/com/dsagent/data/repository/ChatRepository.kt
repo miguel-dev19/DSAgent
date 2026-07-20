@@ -31,13 +31,6 @@ class ChatRepository @Inject constructor(
     fun setSessionId(id: String) { sessionId = id }
     fun getSessionId(): String? = sessionId
     
-    fun getStatus(): Map<String, Any?> {
-        return mapOf(
-            "session_id" to sessionId,
-            "connected" to (sessionId != null)
-        )
-    }
-    
     private fun cleanText(text: String): String {
         return text
             .replace(Regex("\\s*FINISHED\\s*", RegexOption.IGNORE_CASE), "")

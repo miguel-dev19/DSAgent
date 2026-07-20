@@ -1,47 +1,108 @@
 package com.dsagent.ui.components
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dsagent.ui.theme.*
 
 @Composable
 fun MarkdownRenderer(text: String) {
-    val cleanedText = remember(text) { cleanMarkdown(text) }
-    val annotatedString = remember(cleanedText) { parseMarkdown(cleanedText) }
+    val blocks = remember(text) { parseMarkdownBlocks(text) }
     
-    ClickableText(
-        text = annotatedString,
-        style = MaterialTheme.typography.bodyMedium.copy(
-            color = DarkText,
-            lineHeight = 24.sp
-        ),
-        onClick = { offset ->
-            annotatedString.getStringAnnotations("url", offset, offset)
-                .firstOrNull()?.let { /* Abrir URL */ }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        blocks.forEach { block ->
+            when (block) {
+                is MarkdownBlock.Text -> {
+                    ClickableText(
+                        text = block.annotatedString,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = DarkText,
+                            lineHeight = 24.sp
+                        ),
+                        onClick = { offset ->
+                            block.annotatedString.getStringAnnotations("url", offset, offset)
+                                .firstOrNull()?.let { /* Abrir URL */ }
+                        }
+                    )
+                }
+                is MarkdownBlock.Code -> {
+                    CodeBlock(code = block.code, language = block.language)
+                }
+            }
+            Spacer(modifier = Modifier.height(4.dp))
         }
-    )
+    }
+}
+
+sealed class MarkdownBlock {
+    data class Text(val annotatedString: AnnotatedString) : MarkdownBlock()
+    data class Code(val code: String, val language: String) : MarkdownBlock()
+}
+
+fun parseMarkdownBlocks(text: String): List<MarkdownBlock> {
+    val blocks = mutableListOf<MarkdownBlock>()
+    val cleaned = cleanMarkdown(text)
+    
+    // Detectar bloques de codigo ```
+    val codeRegex = Regex("```(\\w*)\\n([\\s\\S]*?)```")
+    var lastIndex = 0
+    
+    codeRegex.findAll(cleaned).forEach { match ->
+        // Texto antes del bloque de codigo
+        if (match.range.first > lastIndex) {
+            val before = cleaned.substring(lastIndex, match.range.first)
+            if (before.isNotBlank()) {
+                blocks.add(MarkdownBlock.Text(parseInlineMarkdown(before)))
+            }
+        }
+        
+        // Bloque de codigo
+        val language = match.groupValues[1].ifEmpty { "code" }
+        val code = match.groupValues[2].trim()
+        blocks.add(MarkdownBlock.Code(code, language))
+        
+        lastIndex = match.range.last + 1
+    }
+    
+    // Texto restante despues del ultimo bloque
+    if (lastIndex < cleaned.length) {
+        val after = cleaned.substring(lastIndex)
+        if (after.isNotBlank()) {
+            blocks.add(MarkdownBlock.Text(parseInlineMarkdown(after)))
+        }
+    }
+    
+    // Si no hay bloques de codigo, todo es texto
+    if (blocks.isEmpty() && cleaned.isNotBlank()) {
+        blocks.add(MarkdownBlock.Text(parseInlineMarkdown(cleaned)))
+    }
+    
+    return blocks
 }
 
 fun cleanMarkdown(text: String): String {
     var cleaned = text
-    // Eliminar FINISHED
     cleaned = Regex("\\s*FINISHED\\s*", RegexOption.IGNORE_CASE).replace(cleaned, "")
-    // Convertir listas con * a -
     cleaned = Regex("^\\s*\\*\\s+", RegexOption.MULTILINE).replace(cleaned, "- ")
-    // Limpiar espacios multiples
     cleaned = Regex(" +").replace(cleaned, " ")
-    // Limpiar saltos excesivos
     cleaned = Regex("\n{3,}").replace(cleaned, "\n\n")
     return cleaned.trim()
 }
 
-fun parseMarkdown(text: String): AnnotatedString {
+fun parseInlineMarkdown(text: String): AnnotatedString {
     return buildAnnotatedString {
         var bold = false
         var italic = false
@@ -51,42 +112,51 @@ fun parseMarkdown(text: String): AnnotatedString {
         while (i < text.length) {
             when {
                 text.startsWith("**", i) -> { bold = !bold; i += 2 }
-                text.startsWith("*", i) -> { italic = !italic; i += 1 }
+                text.startsWith("*", i) && !text.startsWith("**", i) -> { italic = !italic; i += 1 }
                 text.startsWith("`", i) -> { code = !code; i += 1 }
                 text.startsWith("[", i) -> {
                     val end = text.indexOf("](", i)
                     val urlEnd = text.indexOf(")", end)
                     if (end != -1 && urlEnd != -1) {
-                        val linkText = text.substring(i + 1, end)
-                        val url = text.substring(end + 2, urlEnd)
-                        pushStringAnnotation("url", url)
+                        pushStringAnnotation("url", text.substring(end + 2, urlEnd))
                         withStyle(SpanStyle(color = LightBlue, textDecoration = TextDecoration.Underline)) {
-                            append(linkText)
+                            append(text.substring(i + 1, end))
                         }
                         pop()
                         i = urlEnd + 1
                     } else { append(text[i]); i++ }
                 }
-                text.startsWith("```", i) -> {
-                    val end = text.indexOf("```", i + 3)
-                    if (end != -1) {
-                        withStyle(SpanStyle(fontFamily = FontFamily.Monospace, background = LightGray.copy(alpha = 0.3f))) {
-                            append(text.substring(i + 3, end).trim())
-                        }
-                        i = end + 3
-                    } else { append(text[i]); i++ }
+                text.startsWith("### ", i) -> {
+                    val end = text.indexOf("\n", i).let { if (it == -1) text.length else it }
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp)) {
+                        append(text.substring(i + 4, end))
+                        append("\n")
+                    }
+                    i = end
+                }
+                text.startsWith("## ", i) -> {
+                    val end = text.indexOf("\n", i).let { if (it == -1) text.length else it }
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)) {
+                        append(text.substring(i + 3, end))
+                        append("\n")
+                    }
+                    i = end
                 }
                 text.startsWith("# ", i) -> {
-                    val end = text.indexOf("\n", i)
-                    val title = if (end != -1) text.substring(i + 2, end) else text.substring(i + 2)
-                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = 20.sp)) {
-                        append(title)
+                    val end = text.indexOf("\n", i).let { if (it == -1) text.length else it }
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, fontSize = 22.sp)) {
+                        append(text.substring(i + 2, end))
+                        append("\n")
                     }
-                    i = if (end != -1) end else text.length
+                    i = end
                 }
                 text.startsWith("- ", i) -> {
                     append("\n  - ")
                     i += 2
+                }
+                text.startsWith("\n", i) -> {
+                    append("\n")
+                    i++
                 }
                 else -> {
                     val style = SpanStyle(
