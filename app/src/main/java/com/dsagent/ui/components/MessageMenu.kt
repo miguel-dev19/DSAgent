@@ -2,6 +2,7 @@ package com.dsagent.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -39,10 +40,7 @@ fun MessageMenu(
             )
             DropdownMenuItem(
                 text = { Text("Compartir") },
-                onClick = {
-                    // Intent de compartir
-                    showMenu = false
-                }
+                onClick = { showMenu = false }
             )
         }
     }
