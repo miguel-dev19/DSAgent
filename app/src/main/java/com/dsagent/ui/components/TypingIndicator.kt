@@ -1,8 +1,8 @@
 package com.dsagent.ui.components
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,10 +26,7 @@ fun TypingIndicator() {
         border = BorderStroke(1.dp, GrayBorder.copy(alpha = 0.3f))
     ) {
         Row(
-            modifier = Modifier.padding(
-                horizontal = 14.dp,
-                vertical = 12.dp
-            ),
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

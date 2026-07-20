@@ -51,7 +51,7 @@ fun ChatScreen(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                 )
                 
-                HorizontalDivider(
+                Divider(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     color = LightGray
                 )

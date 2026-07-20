@@ -1,8 +1,8 @@
 package com.dsagent.ui.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,17 +11,15 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.Neurology
+import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -54,7 +52,6 @@ fun ChatInputBar(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            // Fila principal: Campo de texto + Boton enviar
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -96,7 +93,6 @@ fun ChatInputBar(
                     )
                 )
                 
-                // Boton enviar/detener
                 AnimatedContent(
                     targetState = isStreaming,
                     label = "send_stop"
@@ -152,7 +148,6 @@ fun ChatInputBar(
                 }
             }
             
-            // Fila inferior: Botones de toggle
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -160,7 +155,6 @@ fun ChatInputBar(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Boton Pensar (Cerebro)
                 Surface(
                     onClick = onToggleThinking,
                     modifier = Modifier.padding(end = 8.dp),
@@ -178,14 +172,11 @@ fun ChatInputBar(
                     )
                 ) {
                     Row(
-                        modifier = Modifier.padding(
-                            horizontal = 14.dp,
-                            vertical = 8.dp
-                        ),
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Neurology,
+                            imageVector = Icons.Outlined.Psychology,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp),
                             tint = if (thinkingEnabled) LightBlue else GrayText
@@ -200,7 +191,6 @@ fun ChatInputBar(
                     }
                 }
                 
-                // Boton Busqueda (Globo)
                 Surface(
                     onClick = onToggleSearch,
                     shape = RoundedCornerShape(20.dp),
@@ -217,10 +207,7 @@ fun ChatInputBar(
                     )
                 ) {
                     Row(
-                        modifier = Modifier.padding(
-                            horizontal = 14.dp,
-                            vertical = 8.dp
-                        ),
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(

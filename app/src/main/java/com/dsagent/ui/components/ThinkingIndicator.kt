@@ -1,13 +1,13 @@
 package com.dsagent.ui.components
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Neurology
+import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,7 +23,6 @@ import com.dsagent.ui.theme.*
 fun ThinkingIndicator(thinkingText: String = "") {
     val infiniteTransition = rememberInfiniteTransition(label = "thinking")
     
-    // Animacion del icono de cerebro
     val brainScale by infiniteTransition.animateFloat(
         initialValue = 0.9f,
         targetValue = 1.1f,
@@ -34,7 +33,6 @@ fun ThinkingIndicator(thinkingText: String = "") {
         label = "brain_pulse"
     )
     
-    // Animacion de rotacion suave
     val rotation by infiniteTransition.animateFloat(
         initialValue = -5f,
         targetValue = 5f,
@@ -50,7 +48,6 @@ fun ThinkingIndicator(thinkingText: String = "") {
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 4.dp)
     ) {
-        // Cabecera de "Pensando..."
         Surface(
             modifier = Modifier.padding(bottom = 8.dp),
             shape = RoundedCornerShape(16.dp),
@@ -58,15 +55,11 @@ fun ThinkingIndicator(thinkingText: String = "") {
             border = BorderStroke(1.dp, LightBlue.copy(alpha = 0.2f))
         ) {
             Row(
-                modifier = Modifier.padding(
-                    horizontal = 14.dp,
-                    vertical = 10.dp
-                ),
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Icono de cerebro animado
                 Icon(
-                    imageVector = Icons.Outlined.Neurology,
+                    imageVector = Icons.Outlined.Psychology,
                     contentDescription = null,
                     modifier = Modifier
                         .size(22.dp)
@@ -77,7 +70,6 @@ fun ThinkingIndicator(thinkingText: String = "") {
                 
                 Spacer(modifier = Modifier.width(10.dp))
                 
-                // Texto "Pensando"
                 Text(
                     text = "Pensando...",
                     style = MaterialTheme.typography.bodySmall,
@@ -87,7 +79,6 @@ fun ThinkingIndicator(thinkingText: String = "") {
                 
                 Spacer(modifier = Modifier.weight(1f))
                 
-                // Puntos animados
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
@@ -118,7 +109,6 @@ fun ThinkingIndicator(thinkingText: String = "") {
             }
         }
         
-        // Texto del pensamiento en streaming
         if (thinkingText.isNotEmpty()) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),

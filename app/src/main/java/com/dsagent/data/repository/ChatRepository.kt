@@ -1,7 +1,7 @@
 package com.dsagent.data.repository
 
 import com.dsagent.network.ApiService
-import com.dsagent.network.models.ChatRequest
+import com.dsagent.network.ChatRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.json.JSONObject
@@ -43,15 +43,15 @@ class ChatRepository @Inject constructor(
         val sid = sessionId ?: throw Exception("No hay sesion activa")
         
         try {
-            val response = apiService.streamChat(
-                ChatRequest(
-                    session_id = sid,
-                    prompt = message,
-                    thinking_enabled = thinkingEnabled,
-                    search_enabled = searchEnabled,
-                    parent_message_id = parentId
-                )
+            val request = ChatRequest(
+                session_id = sid,
+                prompt = message,
+                thinking_enabled = thinkingEnabled,
+                search_enabled = searchEnabled,
+                parent_message_id = parentId
             )
+            
+            val response = apiService.streamChat(request)
             
             if (response.isSuccessful) {
                 val reader = response.body()!!.byteStream().bufferedReader()
