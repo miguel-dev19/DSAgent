@@ -77,7 +77,7 @@ fun ChatScreen(
                         items(uiState.chatHistory) { chat ->
                             ChatHistoryItem(
                                 chat = chat,
-                                isSelected = chat.id == viewModel.uiState.value.chatTitle,
+                                isSelected = chat.id == uiState.chatTitle,
                                 onClick = {
                                     viewModel.loadChat(chat.id)
                                     scope.launch { drawerState.close() }
