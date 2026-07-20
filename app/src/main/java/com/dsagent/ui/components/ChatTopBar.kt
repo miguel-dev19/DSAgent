@@ -2,10 +2,8 @@ package com.dsagent.ui.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.ChatBubbleOutline
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -62,7 +60,7 @@ fun ChatTopBar(
                     }
                 ) {
                     Icon(
-                        Icons.Rounded.ChatBubbleOutline,
+                        Icons.Outlined.Edit,
                         contentDescription = "Nuevo Chat",
                         tint = GrayText
                     )
@@ -84,37 +82,22 @@ fun ChatTopBar(
             ) {
                 DropdownMenuItem(
                     text = { Text("Nuevo chat") },
-                    onClick = {
-                        onNewChat()
-                        showMenu = false
-                    },
-                    leadingIcon = {
-                        Icon(Icons.Rounded.Add, null, tint = GrayText)
-                    }
+                    onClick = { onNewChat(); showMenu = false },
+                    leadingIcon = { Icon(Icons.Outlined.Edit, null, tint = GrayText) }
                 )
                 
                 DropdownMenuItem(
-                    text = { Text("Reenviar ultimo mensaje") },
-                    onClick = {
-                        onRetry()
-                        showMenu = false
-                    },
-                    leadingIcon = {
-                        Icon(Icons.Rounded.ChatBubbleOutline, null, tint = GrayText)
-                    }
+                    text = { Text("Reenviar ultimo") },
+                    onClick = { onRetry(); showMenu = false },
+                    leadingIcon = { Icon(Icons.Outlined.Redo, null, tint = GrayText) }
                 )
                 
                 Divider()
                 
                 DropdownMenuItem(
                     text = { Text("Limpiar chat") },
-                    onClick = {
-                        onClearChat()
-                        showMenu = false
-                    },
-                    leadingIcon = {
-                        Icon(Icons.Rounded.ChatBubbleOutline, null, tint = ErrorRed)
-                    }
+                    onClick = { onClearChat(); showMenu = false },
+                    leadingIcon = { Icon(Icons.Outlined.Delete, null, tint = ErrorRed) }
                 )
             }
         },

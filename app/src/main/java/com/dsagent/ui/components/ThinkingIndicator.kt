@@ -23,106 +23,33 @@ import com.dsagent.ui.theme.*
 fun ThinkingIndicator(thinkingText: String = "") {
     val infiniteTransition = rememberInfiniteTransition(label = "thinking")
     
-    val brainScale by infiniteTransition.animateFloat(
-        initialValue = 0.9f,
-        targetValue = 1.1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(800, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "brain_pulse"
-    )
+    val brainScale by infiniteTransition.animateFloat(0.9f, 1.1f, infiniteRepeatable(tween(800, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "brain")
+    val rotation by infiniteTransition.animateFloat(-5f, 5f, infiniteRepeatable(tween(1200, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "rotate")
     
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = -5f,
-        targetValue = 5f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1200, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "brain_rotate"
-    )
-    
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 4.dp)
-    ) {
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 4.dp)) {
         Surface(
             modifier = Modifier.padding(bottom = 8.dp),
             shape = RoundedCornerShape(16.dp),
             color = LightBlue.copy(alpha = 0.08f),
             border = BorderStroke(1.dp, LightBlue.copy(alpha = 0.2f))
         ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Psychology,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(22.dp)
-                        .scale(brainScale)
-                        .rotate(rotation),
-                    tint = LightBlue
-                )
-                
-                Spacer(modifier = Modifier.width(10.dp))
-                
-                Text(
-                    text = "Pensando...",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = LightBlue
-                )
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(3.dp)
-                ) {
+            Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Psychology, null, Modifier.size(22.dp).scale(brainScale).rotate(rotation), tint = LightBlue)
+                Spacer(Modifier.width(10.dp))
+                Text("Pensando...", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium, color = LightBlue)
+                Spacer(Modifier.weight(1f))
+                Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
                     repeat(3) { index ->
-                        val dotAlpha by infiniteTransition.animateFloat(
-                            initialValue = 0.3f,
-                            targetValue = 1f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(
-                                    durationMillis = 400,
-                                    delayMillis = index * 200
-                                ),
-                                repeatMode = RepeatMode.Reverse
-                            ),
-                            label = "dot_alpha_$index"
-                        )
-                        
-                        Box(
-                            modifier = Modifier
-                                .size(5.dp)
-                                .background(
-                                    color = LightBlue.copy(alpha = dotAlpha),
-                                    shape = CircleShape
-                                )
-                        )
+                        val dotAlpha by infiniteTransition.animateFloat(0.3f, 1f, infiniteRepeatable(tween(400, delayMillis = index * 200), RepeatMode.Reverse), label = "dot$index")
+                        Box(Modifier.size(5.dp).background(LightBlue.copy(alpha = dotAlpha), CircleShape))
                     }
                 }
             }
         }
         
         if (thinkingText.isNotEmpty()) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                color = Color(0xFFF8FAFC),
-                border = BorderStroke(1.dp, GrayBorder.copy(alpha = 0.5f))
-            ) {
-                Text(
-                    text = thinkingText,
-                    modifier = Modifier.padding(12.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = GrayText,
-                    lineHeight = MaterialTheme.typography.bodySmall.lineHeight
-                )
+            Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), color = Color(0xFFF8FAFC), border = BorderStroke(1.dp, GrayBorder.copy(alpha = 0.5f))) {
+                Text(thinkingText, Modifier.padding(12.dp), style = MaterialTheme.typography.bodySmall, color = GrayText)
             }
         }
     }
