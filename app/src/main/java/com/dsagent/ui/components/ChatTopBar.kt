@@ -44,16 +44,19 @@ fun ChatTopBar(
             }
         },
         actions = {
-            // Boton Nuevo Chat
+            // Boton Nuevo Chat - Burbuja con +
             IconButton(onClick = onNewChat) {
                 BadgedBox(
                     badge = {
-                        Badge(containerColor = LightBlue) {
+                        Badge(
+                            containerColor = LightBlue,
+                            contentColor = White
+                        ) {
                             Icon(
                                 Icons.Rounded.Add,
                                 contentDescription = null,
                                 tint = White,
-                                modifier = Modifier.size(12.dp)
+                                modifier = Modifier.size(10.dp)
                             )
                         }
                     }
