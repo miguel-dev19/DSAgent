@@ -1,5 +1,6 @@
 package com.dsagent.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.dsagent.ui.components.*
@@ -17,15 +19,20 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ChatScreen(
+    darkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {},
     viewModel: ChatViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     
     var thinkingEnabled by remember { mutableStateOf(true) }
     var searchEnabled by remember { mutableStateOf(true) }
+    
+    val backgroundColor = if (darkTheme) DarkBackground else White
     
     LaunchedEffect(uiState.messages.size, uiState.thinkingText, uiState.streamedText) {
         if (uiState.messages.isNotEmpty() || uiState.streamedText.isNotEmpty()) {
@@ -38,39 +45,31 @@ fun ChatScreen(
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.width(300.dp),
-                drawerContainerColor = White
+                drawerContainerColor = if (darkTheme) DarkSurface else White
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // Titulo del historial
                 Text(
                     text = "Historial",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    color = DarkText,
+                    color = if (darkTheme) DarkTextLight else DarkText,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                 )
                 
                 Divider(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    color = LightGray
+                    color = if (darkTheme) DarkBorder else LightGray
                 )
                 
                 Spacer(modifier = Modifier.height(4.dp))
                 
-                // Lista de chats
                 if (uiState.chatHistory.isEmpty()) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(32.dp),
+                        modifier = Modifier.fillMaxWidth().padding(32.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "Sin conversaciones",
-                            color = GrayText,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Text("Sin conversaciones", color = GrayText, style = MaterialTheme.typography.bodyMedium)
                     }
                 } else {
                     LazyColumn {
@@ -82,13 +81,21 @@ fun ChatScreen(
                                     viewModel.loadChat(chat.id)
                                     scope.launch { drawerState.close() }
                                 },
-                                onDelete = {
-                                    viewModel.deleteChat(chat.id)
-                                }
+                                onDelete = { viewModel.deleteChat(chat.id) }
                             )
                         }
                     }
                 }
+                
+                Spacer(modifier = Modifier.weight(1f))
+                
+                Divider(color = if (darkTheme) DarkBorder else LightGray)
+                
+                TextButton(onClick = onToggleTheme, modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                    Text(if (darkTheme) "Modo claro" else "Modo oscuro", color = LightBlue)
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     ) {
@@ -96,10 +103,21 @@ fun ChatScreen(
             topBar = {
                 ChatTopBar(
                     chatTitle = uiState.chatTitle,
-                    onMenuClick = {
-                        scope.launch { drawerState.open() }
-                    },
-                    onNewChat = { viewModel.newChat() }
+                    onMenuClick = { scope.launch { drawerState.open() } },
+                    onNewChat = { viewModel.newChat() },
+                    onClearChat = { viewModel.newChat() },
+                    onRetry = { viewModel.retryLastMessage() },
+                    onExport = {
+                        // Compartir ultima respuesta
+                        if (uiState.lastResponse.isNotEmpty()) {
+                            val sendIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, uiState.lastResponse)
+                                type = "text/plain"
+                            }
+                            context.startActivity(Intent.createChooser(sendIntent, "Compartir"))
+                        }
+                    }
                 )
             },
             bottomBar = {
@@ -121,10 +139,7 @@ fun ChatScreen(
             } else {
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .background(White),
+                    modifier = Modifier.fillMaxSize().padding(padding).background(backgroundColor),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -135,17 +150,9 @@ fun ChatScreen(
                         }
                     }
                     
-                    if (uiState.isThinking) {
-                        item { ThinkingIndicator(thinkingText = uiState.thinkingText) }
-                    }
-                    
-                    if (uiState.isStreaming && !uiState.isThinking && uiState.streamedText.isEmpty()) {
-                        item { TypingIndicator() }
-                    }
-                    
-                    if (uiState.streamedText.isNotEmpty()) {
-                        item { AIMessageContent(text = uiState.streamedText) }
-                    }
+                    if (uiState.isThinking) item { ThinkingIndicator(thinkingText = uiState.thinkingText) }
+                    if (uiState.isStreaming && !uiState.isThinking && uiState.streamedText.isEmpty()) item { TypingIndicator() }
+                    if (uiState.streamedText.isNotEmpty()) item { AIMessageContent(text = uiState.streamedText) }
                 }
             }
         }

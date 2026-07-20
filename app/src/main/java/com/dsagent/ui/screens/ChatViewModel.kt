@@ -24,6 +24,7 @@ data class ChatUiState(
     val chatTitle: String = "Nuevo Chat",
     val sessionReady: Boolean = false,
     val chatHistory: List<ChatEntity> = emptyList(),
+    val lastResponse: String = "",
     val error: String? = null
 )
 
@@ -44,6 +45,7 @@ class ChatViewModel @Inject constructor(
     
     private var streamingJob: Job? = null
     private var parentMessageId: String? = null
+    private var lastUserMessage: String = ""
     
     init {
         loadChatHistory()
@@ -61,28 +63,49 @@ class ChatViewModel @Inject constructor(
     private fun createSession() {
         viewModelScope.launch {
             _uiState.update { it.copy(sessionReady = false) }
-            
             chatRepository.createSession()
                 .onSuccess {
                     parentMessageId = null
+                    lastUserMessage = ""
                     _uiState.update { it.copy(sessionReady = true) }
                 }
                 .onFailure {
-                    _uiState.update {
-                        it.copy(error = "Error de conexion al crear sesion")
-                    }
+                    _uiState.update { it.copy(error = "Error de conexion al crear sesion") }
                 }
         }
     }
     
     fun updateMessage(message: String) {
+        // Solo procesar comandos si no esta en streaming
+        if (!_uiState.value.isStreaming) {
+            when (message.trim().lowercase()) {
+                "/clear" -> {
+                    newChat()
+                    return
+                }
+                "/retry" -> {
+                    retryLastMessage()
+                    return
+                }
+            }
+        }
         _uiState.update { it.copy(currentMessage = message) }
+    }
+    
+    fun retryLastMessage() {
+        if (lastUserMessage.isNotEmpty() && !_uiState.value.isStreaming) {
+            _uiState.update { it.copy(currentMessage = lastUserMessage) }
+            sendMessage()
+        }
     }
     
     fun sendMessage(thinkingEnabled: Boolean = true, searchEnabled: Boolean = true) {
         val message = _uiState.value.currentMessage
         val sessionId = chatRepository.getSessionId()
         if (message.isBlank() || _uiState.value.isStreaming || sessionId == null) return
+        
+        // Guardar el mensaje para posible retry
+        lastUserMessage = message
         
         _uiState.update { state ->
             state.copy(
@@ -95,7 +118,7 @@ class ChatViewModel @Inject constructor(
             )
         }
         
-        // Guardar mensaje del usuario
+        // Guardar en Room
         viewModelScope.launch {
             messageDao.insertMessage(
                 MessageEntity(
@@ -106,10 +129,8 @@ class ChatViewModel @Inject constructor(
                 )
             )
             
-            // Si es el primer mensaje, guardar chat en historial
             if (_uiState.value.messages.size <= 1) {
                 _uiState.update { it.copy(chatTitle = message.take(30)) }
-                
                 chatDao.insertChat(
                     ChatEntity(
                         id = sessionId,
@@ -120,7 +141,6 @@ class ChatViewModel @Inject constructor(
                     )
                 )
             } else {
-                // Actualizar ultimo mensaje
                 chatDao.updateChat(
                     ChatEntity(
                         id = sessionId,
@@ -133,6 +153,7 @@ class ChatViewModel @Inject constructor(
             }
         }
         
+        // Iniciar streaming
         streamingJob = viewModelScope.launch {
             var fullResponse = ""
             
@@ -142,26 +163,24 @@ class ChatViewModel @Inject constructor(
                 searchEnabled = searchEnabled,
                 parentId = parentMessageId
             ).catch { e ->
-                _uiState.update {
-                    it.copy(isStreaming = false, isThinking = false, error = e.message)
+                _uiState.update { 
+                    it.copy(isStreaming = false, isThinking = false, error = e.message) 
                 }
             }.collect { event ->
                 when (event) {
                     is StreamEvent.Thinking -> {
-                        _uiState.update { state ->
-                            state.copy(thinkingText = state.thinkingText + event.text)
-                        }
+                        _uiState.update { it.copy(thinkingText = it.thinkingText + event.text) }
                     }
                     is StreamEvent.Response -> {
                         fullResponse += event.text
-                        _uiState.update { state ->
-                            state.copy(isThinking = false, streamedText = fullResponse)
+                        _uiState.update { 
+                            it.copy(isThinking = false, streamedText = fullResponse) 
                         }
                     }
                     is StreamEvent.Done -> {
                         parentMessageId = event.messageId
                         
-                        // Guardar respuesta de la IA
+                        // Guardar respuesta
                         messageDao.insertMessage(
                             MessageEntity(
                                 chatId = sessionId,
@@ -171,7 +190,7 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                         
-                        // Actualizar ultimo mensaje
+                        // Actualizar chat
                         chatDao.updateChat(
                             ChatEntity(
                                 id = sessionId,
@@ -182,18 +201,19 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                         
-                        _uiState.update { state ->
-                            state.copy(
-                                messages = state.messages + ChatMessage.AI(text = fullResponse),
+                        _uiState.update {
+                            it.copy(
+                                messages = it.messages + ChatMessage.AI(text = fullResponse),
                                 isStreaming = false,
                                 streamedText = "",
-                                thinkingText = ""
+                                thinkingText = "",
+                                lastResponse = fullResponse
                             )
                         }
                     }
                     is StreamEvent.Error -> {
-                        _uiState.update { state ->
-                            state.copy(isStreaming = false, isThinking = false, error = event.message)
+                        _uiState.update { 
+                            it.copy(isStreaming = false, isThinking = false, error = event.message) 
                         }
                     }
                 }
@@ -208,16 +228,21 @@ class ChatViewModel @Inject constructor(
     
     fun newChat() {
         streamingJob?.cancel()
-        _uiState.update { ChatUiState(sessionReady = false, chatHistory = _uiState.value.chatHistory) }
+        lastUserMessage = ""  // Limpiar mensaje guardado
+        parentMessageId = null
+        _uiState.update { 
+            ChatUiState(
+                sessionReady = false, 
+                chatHistory = _uiState.value.chatHistory 
+            ) 
+        }
         createSession()
     }
     
     fun loadChat(chatId: String) {
         streamingJob?.cancel()
-        
         viewModelScope.launch {
             chatRepository.setSessionId(chatId)
-            
             messageDao.getMessagesForChat(chatId).collect { messages ->
                 val chatMessages = messages.map { msg ->
                     when (msg.role) {
@@ -225,9 +250,7 @@ class ChatViewModel @Inject constructor(
                         else -> ChatMessage.AI(msg.content)
                     }
                 }
-                
                 val chat = chatDao.getChatById(chatId)
-                
                 _uiState.update {
                     it.copy(
                         messages = chatMessages,
@@ -244,7 +267,6 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             messageDao.deleteMessagesForChat(chatId)
             chatDao.deleteChatById(chatId)
-            
             if (chatRepository.getSessionId() == chatId) {
                 newChat()
             }

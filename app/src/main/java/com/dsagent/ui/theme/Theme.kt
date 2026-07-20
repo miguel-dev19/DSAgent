@@ -1,8 +1,8 @@
 package com.dsagent.ui.theme
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
     primary = LightBlue,
@@ -11,13 +11,30 @@ private val LightColorScheme = lightColorScheme(
     background = White,
     surface = White,
     onBackground = DarkText,
-    onSurface = DarkText
+    onSurface = DarkText,
+    surfaceVariant = LightGray,
+    outline = GrayBorder
+)
+
+private val DarkColorScheme = darkColorScheme(
+    primary = LightBlue,
+    onPrimary = White,
+    secondary = LightBlueVariant,
+    background = DarkBackground,
+    surface = DarkSurface,
+    onBackground = DarkTextLight,
+    onSurface = DarkTextLight,
+    surfaceVariant = DarkCard,
+    outline = DarkBorder
 )
 
 @Composable
-fun DSAgentTheme(content: @Composable () -> Unit) {
+fun DSAgentTheme(
+    darkTheme: Boolean = false,
+    content: @Composable () -> Unit
+) {
     MaterialTheme(
-        colorScheme = LightColorScheme,
+        colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
         typography = Typography,
         content = content
     )
