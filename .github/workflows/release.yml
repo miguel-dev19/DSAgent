@@ -28,12 +28,16 @@ jobs:
     - name: Build APK
       run: chmod +x gradlew && ./gradlew assembleDebug
       
-    - name: Get version name
+    - name: Get version
       id: version
       run: |
         COMMIT_COUNT=$(git rev-list --count HEAD)
-        SHORT_HASH=$(git rev-parse --short HEAD)
-        echo "VERSION=v1.0.${COMMIT_COUNT}-${SHORT_HASH}" >> $GITHUB_OUTPUT
+        echo "VERSION=v1.0.${COMMIT_COUNT}" >> $GITHUB_OUTPUT
+        echo "APK_NAME=DSAgent v1.0.${COMMIT_COUNT}" >> $GITHUB_OUTPUT
+      
+    - name: Rename APK
+      run: |
+        mv app/build/outputs/apk/debug/app-debug.apk "DSAgent v${{ steps.version.outputs.VERSION }}.apk"
       
     - name: Create Release
       uses: softprops/action-gh-release@v2
@@ -41,13 +45,23 @@ jobs:
         tag_name: ${{ steps.version.outputs.VERSION }}
         name: DSAgent ${{ steps.version.outputs.VERSION }}
         body: |
-          ## DSAgent - Build Automatico
+          ## DSAgent ${{ steps.version.outputs.VERSION }}
           
-          **Commit:** ${{ github.sha }}
+          ### Novedades
+          - Chat con streaming en tiempo real
+          - Pensamiento profundo (DeepThink)
+          - Busqueda inteligente
+          - Markdown completo con bloques de codigo
+          - Historial de conversaciones
+          - Tema oscuro
+          - Menu de opciones
+          - Comandos /clear y /retry
           
-          ### Descargar APK
-          El archivo APK esta en la seccion de Assets.
-        files: app/build/outputs/apk/debug/app-debug.apk
+          ### Instalacion
+          1. Descargar **${{ steps.version.outputs.APK_NAME }}.apk**
+          2. Permitir instalaciones de fuentes desconocidas
+          3. Instalar y disfrutar
+        files: DSAgent v${{ steps.version.outputs.VERSION }}.apk
         draft: false
         prerelease: false
       env:
