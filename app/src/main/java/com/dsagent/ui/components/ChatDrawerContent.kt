@@ -1,14 +1,11 @@
 package com.dsagent.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Chat
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,54 +17,6 @@ import com.dsagent.data.local.entity.ChatEntity
 import com.dsagent.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
-
-@Composable
-fun DrawerHeader() {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        color = Color(0xFFF8FAFC),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Avatar generico
-            Surface(
-                modifier = Modifier.size(48.dp),
-                shape = CircleShape,
-                color = LightBlue
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = null,
-                        tint = White,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            }
-            
-            Spacer(modifier = Modifier.width(12.dp))
-            
-            Column {
-                Text(
-                    text = "Usuario",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = DarkText
-                )
-                Text(
-                    text = "Free",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = GrayText
-                )
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -94,7 +43,6 @@ fun ChatHistoryItem(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icono de chat
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
@@ -140,7 +88,6 @@ fun ChatHistoryItem(
         }
     }
     
-    // Dialogo de confirmacion para eliminar
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },

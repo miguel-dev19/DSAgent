@@ -7,10 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.dsagent.data.local.entity.ChatEntity
 import com.dsagent.ui.components.*
 import com.dsagent.ui.theme.*
 import kotlinx.coroutines.launch
@@ -40,23 +40,23 @@ fun ChatScreen(
                 modifier = Modifier.width(300.dp),
                 drawerContainerColor = White
             ) {
-                // Cabecera del drawer
-                DrawerHeader()
+                Spacer(modifier = Modifier.height(16.dp))
                 
-                Divider(
+                // Titulo del historial
+                Text(
+                    text = "Historial",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    color = DarkText,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                )
+                
+                HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     color = LightGray
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Titulo historial
-                Text(
-                    text = "Historial",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = GrayText,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                Spacer(modifier = Modifier.height(4.dp))
                 
                 // Lista de chats
                 if (uiState.chatHistory.isEmpty()) {
@@ -64,7 +64,7 @@ fun ChatScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(32.dp),
-                        contentAlignment = androidx.compose.ui.Alignment.Center
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Sin conversaciones",
@@ -89,22 +89,6 @@ fun ChatScreen(
                         }
                     }
                 }
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                Divider(color = LightGray)
-                
-                // Boton cerrar sesion (placeholder)
-                TextButton(
-                    onClick = { },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Text("Cerrar sesion", color = ErrorRed)
-                }
-                
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     ) {
