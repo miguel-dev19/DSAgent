@@ -1,19 +1,20 @@
 package com.dsagent.ui.screens
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Psychology
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.dsagent.R
 import com.dsagent.ui.theme.*
 
 @Composable
@@ -46,7 +47,7 @@ fun WelcomeScreen(onStart: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo animado
+            // Logo usando el icono de la app
             Surface(
                 modifier = Modifier
                     .size(120.dp)
@@ -56,18 +57,16 @@ fun WelcomeScreen(onStart: () -> Unit) {
                 shadowElevation = 8.dp
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Rounded.Psychology,
-                        contentDescription = null,
-                        modifier = Modifier.size(64.dp),
-                        tint = White
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = "DSAgent Logo",
+                        modifier = Modifier.size(80.dp)
                     )
                 }
             }
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            // Titulo
             Text(
                 text = "DeepSeek Agent",
                 style = MaterialTheme.typography.headlineLarge,
@@ -78,7 +77,6 @@ fun WelcomeScreen(onStart: () -> Unit) {
             
             Spacer(modifier = Modifier.height(12.dp))
             
-            // Subtitulo
             Text(
                 text = "Asistente inteligente con pensamiento profundo y busqueda en tiempo real",
                 style = MaterialTheme.typography.bodyLarge,
@@ -89,7 +87,6 @@ fun WelcomeScreen(onStart: () -> Unit) {
             
             Spacer(modifier = Modifier.height(48.dp))
             
-            // Terminos
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -99,50 +96,27 @@ fun WelcomeScreen(onStart: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = GrayText
                 )
-                TextButton(
-                    onClick = { },
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Text(
-                        text = "Terminos",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = LightBlue,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                TextButton(onClick = { }, contentPadding = PaddingValues(0.dp)) {
+                    Text("Terminos", style = MaterialTheme.typography.bodySmall, color = LightBlue, fontWeight = FontWeight.SemiBold)
                 }
                 Text(
                     text = " y ",
                     style = MaterialTheme.typography.bodySmall,
                     color = GrayText
                 )
-                TextButton(
-                    onClick = { },
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Text(
-                        text = "Condiciones",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = LightBlue,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                TextButton(onClick = { }, contentPadding = PaddingValues(0.dp)) {
+                    Text("Condiciones", style = MaterialTheme.typography.bodySmall, color = LightBlue, fontWeight = FontWeight.SemiBold)
                 }
             }
             
             Spacer(modifier = Modifier.height(20.dp))
             
-            // Boton principal
             Button(
                 onClick = onStart,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = LightBlue
-                ),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = LightBlue),
                 shape = RoundedCornerShape(16.dp),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 4.dp
-                )
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
             ) {
                 Text(
                     text = "Comenzar",
