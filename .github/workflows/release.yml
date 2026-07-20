@@ -31,40 +31,38 @@ jobs:
     - name: Get version
       id: version
       run: |
-        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
-        COMMIT_COUNT=$(git rev-list --count HEAD)
-        echo "VERSION=${LATEST_TAG}" >> $GITHUB_OUTPUT
-        echo "APK_NAME=DSAgent ${LATEST_TAG}" >> $GITHUB_OUTPUT
+        echo "VERSION=v1.3.5" >> $GITHUB_OUTPUT
+        echo "APK_NAME=DSAgent v1.3.5" >> $GITHUB_OUTPUT
       
     - name: Rename APK
       run: |
-        cp app/build/outputs/apk/debug/app-debug.apk "DSAgent ${{ steps.version.outputs.VERSION }}.apk"
+        cp app/build/outputs/apk/debug/app-debug.apk "DSAgent v1.3.5.apk"
       
     - name: Create Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ steps.version.outputs.VERSION }}
-        name: DSAgent ${{ steps.version.outputs.VERSION }}
+        tag_name: v1.3.5
+        name: DSAgent v1.3.5
         body: |
-          ## DSAgent ${{ steps.version.outputs.VERSION }}
+          ## DSAgent v1.3.5
           
           **Fecha:** $(date +'%Y-%m-%d %H:%M')
           
           ### Novedades
           - Chat con streaming en tiempo real
           - Pensamiento profundo (DeepThink)
-          - Busqueda inteligente
-          - Markdown completo con bloques de codigo
+          - Búsqueda inteligente
+          - Markdown completo con bloques de código
           - Historial de conversaciones
           - Tema oscuro
-          - Correccion de espacios entre tokens
+          - Corrección de espacios entre tokens
           - Emojis corruptos eliminados
           
-          ### Instalacion
-          1. Descargar **DSAgent ${{ steps.version.outputs.VERSION }}.apk**
+          ### Instalación
+          1. Descargar **DSAgent v1.3.5.apk**
           2. Permitir instalaciones de fuentes desconocidas
           3. Instalar y disfrutar
-        files: DSAgent ${{ steps.version.outputs.VERSION }}.apk
+        files: DSAgent v1.3.5.apk
         draft: false
         prerelease: false
       env:
