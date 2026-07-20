@@ -9,6 +9,9 @@ interface ChatDao {
     @Query("SELECT * FROM chats ORDER BY timestamp DESC")
     fun getAllChats(): Flow<List<ChatEntity>>
     
+    @Query("SELECT * FROM chats WHERE id = :chatId")
+    suspend fun getChatById(chatId: String): ChatEntity?
+    
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChat(chat: ChatEntity)
     
@@ -17,4 +20,7 @@ interface ChatDao {
     
     @Delete
     suspend fun deleteChat(chat: ChatEntity)
+    
+    @Query("DELETE FROM chats WHERE id = :chatId")
+    suspend fun deleteChatById(chatId: String)
 }

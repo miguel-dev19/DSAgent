@@ -8,5 +8,6 @@ data class ChatEntity(
     @PrimaryKey val id: String,
     val title: String,
     val lastMessage: String,
-    val timestamp: Long
+    val timestamp: Long,
+    val messageCount: Int = 0
 )

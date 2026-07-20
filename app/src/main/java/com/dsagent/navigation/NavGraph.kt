@@ -10,20 +10,17 @@ import com.dsagent.ui.screens.*
 fun DSAgentNavigation() {
     val navController = rememberNavController()
     
-    NavHost(navController = navController, startDestination = "welcome") {
+    NavHost(
+        navController = navController,
+        startDestination = "welcome"
+    ) {
         composable("welcome") {
-            WelcomeScreen(onStart = { navController.navigate("login") })
-        }
-        composable("login") {
-            LoginScreen(
-                onLoginSuccess = { navController.navigate("home") },
-                onNavigateToRegister = { navController.navigate("register") }
-            )
-        }
-        composable("register") {
-            RegisterScreen(
-                onRegisterSuccess = { navController.navigate("home") },
-                onNavigateToLogin = { navController.popBackStack() }
+            WelcomeScreen(
+                onStart = {
+                    navController.navigate("home") {
+                        popUpTo("welcome") { inclusive = true }
+                    }
+                }
             )
         }
         composable("home") {
