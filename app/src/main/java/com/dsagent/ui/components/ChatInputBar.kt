@@ -46,10 +46,9 @@ fun ChatInputBar(
         shape = RoundedCornerShape(24.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
         ) {
+            // Fila: Campo de texto + Boton enviar
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -57,15 +56,13 @@ fun ChatInputBar(
                 BasicTextField(
                     value = messageText,
                     onValueChange = onMessageChange,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    modifier = Modifier.weight(1f).padding(horizontal = 12.dp, vertical = 10.dp),
                     textStyle = TextStyle(fontSize = 16.sp, color = DarkText, lineHeight = 22.sp),
                     cursorBrush = Brush.horizontalGradient(listOf(LightBlue, LightBlueVariant)),
                     decorationBox = { innerTextField ->
                         Box {
                             if (messageText.isEmpty()) {
-                                Text("Escribe un mensaje...", style = MaterialTheme.typography.bodyMedium, color = GrayText)
+                                Text("Mensaje...", style = MaterialTheme.typography.bodyMedium, color = GrayText)
                             }
                             innerTextField()
                         }
@@ -77,24 +74,18 @@ fun ChatInputBar(
                     )
                 )
                 
-                AnimatedContent(targetState = isStreaming, label = "send_stop") { streaming ->
+                AnimatedContent(targetState = isStreaming, label = "send") { streaming ->
                     when (streaming) {
                         false -> {
                             IconButton(
                                 onClick = { if (messageText.isNotBlank()) onSendMessage() },
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .background(
-                                        color = if (messageText.isNotBlank()) LightBlue else GrayBorder,
-                                        shape = CircleShape
-                                    )
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Send,
-                                    contentDescription = "Enviar",
-                                    tint = if (messageText.isNotBlank()) White else GrayText,
-                                    modifier = Modifier.size(22.dp).rotate(-45f)
+                                modifier = Modifier.size(44.dp).background(
+                                    if (messageText.isNotBlank()) LightBlue else GrayBorder, CircleShape
                                 )
+                            ) {
+                                Icon(Icons.Rounded.Send, "Enviar",
+                                    tint = if (messageText.isNotBlank()) White else GrayText,
+                                    modifier = Modifier.size(22.dp).rotate(-45f))
                             }
                         }
                         true -> {
@@ -102,20 +93,19 @@ fun ChatInputBar(
                                 onClick = onStopStreaming,
                                 modifier = Modifier.size(44.dp).background(ErrorRed, CircleShape)
                             ) {
-                                Icon(Icons.Rounded.Stop, contentDescription = "Detener", tint = White, modifier = Modifier.size(22.dp))
+                                Icon(Icons.Rounded.Stop, "Detener", White, Modifier.size(22.dp))
                             }
                         }
                     }
                 }
             }
             
-            // Botones de toggle estilo Telegram
+            // Fila: Botones Pensar y Buscar DEBAJO del campo
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 6.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Boton Pensar
                 Surface(
                     onClick = onToggleThinking,
                     modifier = Modifier.padding(end = 8.dp),
@@ -123,24 +113,23 @@ fun ChatInputBar(
                     color = if (thinkingEnabled) LightBlue.copy(alpha = 0.12f) else LightGray,
                     border = BorderStroke(1.dp, if (thinkingEnabled) LightBlue.copy(alpha = 0.4f) else GrayBorder)
                 ) {
-                    Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.Psychology, null, Modifier.size(18.dp), tint = if (thinkingEnabled) LightBlue else GrayText)
-                        Spacer(Modifier.width(6.dp))
-                        Text("Pensar", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Medium, color = if (thinkingEnabled) LightBlue else GrayText)
+                    Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.Psychology, null, Modifier.size(16.dp), tint = if (thinkingEnabled) LightBlue else GrayText)
+                        Spacer(Modifier.width(4.dp))
+                        Text("Pensar", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Medium, color = if (thinkingEnabled) LightBlue else GrayText)
                     }
                 }
                 
-                // Boton Buscar
                 Surface(
                     onClick = onToggleSearch,
                     shape = RoundedCornerShape(20.dp),
                     color = if (searchEnabled) LightBlue.copy(alpha = 0.12f) else LightGray,
                     border = BorderStroke(1.dp, if (searchEnabled) LightBlue.copy(alpha = 0.4f) else GrayBorder)
                 ) {
-                    Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Outlined.Language, null, Modifier.size(18.dp), tint = if (searchEnabled) LightBlue else GrayText)
-                        Spacer(Modifier.width(6.dp))
-                        Text("Buscar", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Medium, color = if (searchEnabled) LightBlue else GrayText)
+                    Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.Language, null, Modifier.size(16.dp), tint = if (searchEnabled) LightBlue else GrayText)
+                        Spacer(Modifier.width(4.dp))
+                        Text("Buscar", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Medium, color = if (searchEnabled) LightBlue else GrayText)
                     }
                 }
             }
