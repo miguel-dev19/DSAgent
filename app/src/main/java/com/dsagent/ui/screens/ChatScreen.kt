@@ -33,6 +33,7 @@ fun ChatScreen(
     var searchEnabled by remember { mutableStateOf(true) }
     
     val backgroundColor = if (darkTheme) DarkBackground else White
+    val bubbleColor = if (darkTheme) DarkCard else LightGray
     
     LaunchedEffect(uiState.messages.size, uiState.thinkingText, uiState.streamedText) {
         if (uiState.messages.isNotEmpty() || uiState.streamedText.isNotEmpty()) {
@@ -62,14 +63,12 @@ fun ChatScreen(
                     color = if (darkTheme) DarkBorder else LightGray
                 )
                 
-                Spacer(modifier = Modifier.height(4.dp))
-                
                 if (uiState.chatHistory.isEmpty()) {
                     Box(
                         modifier = Modifier.fillMaxWidth().padding(32.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Sin conversaciones", color = GrayText, style = MaterialTheme.typography.bodyMedium)
+                        Text("Sin conversaciones", color = GrayText)
                     }
                 } else {
                     LazyColumn {
@@ -94,8 +93,6 @@ fun ChatScreen(
                 TextButton(onClick = onToggleTheme, modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                     Text(if (darkTheme) "Modo claro" else "Modo oscuro", color = LightBlue)
                 }
-                
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     ) {
@@ -106,18 +103,7 @@ fun ChatScreen(
                     onMenuClick = { scope.launch { drawerState.open() } },
                     onNewChat = { viewModel.newChat() },
                     onClearChat = { viewModel.newChat() },
-                    onRetry = { viewModel.retryLastMessage() },
-                    onExport = {
-                        // Compartir ultima respuesta
-                        if (uiState.lastResponse.isNotEmpty()) {
-                            val sendIntent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, uiState.lastResponse)
-                                type = "text/plain"
-                            }
-                            context.startActivity(Intent.createChooser(sendIntent, "Compartir"))
-                        }
-                    }
+                    onRetry = { viewModel.retryLastMessage() }
                 )
             },
             bottomBar = {
@@ -139,9 +125,17 @@ fun ChatScreen(
             } else {
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier.fillMaxSize().padding(padding).background(backgroundColor),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .background(backgroundColor),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 12.dp,
+                        bottom = 12.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(uiState.messages) { message ->
                         when (message) {
@@ -150,9 +144,19 @@ fun ChatScreen(
                         }
                     }
                     
-                    if (uiState.isThinking) item { ThinkingIndicator(thinkingText = uiState.thinkingText) }
-                    if (uiState.isStreaming && !uiState.isThinking && uiState.streamedText.isEmpty()) item { TypingIndicator() }
-                    if (uiState.streamedText.isNotEmpty()) item { AIMessageContent(text = uiState.streamedText) }
+                    if (uiState.isThinking) {
+                        item { ThinkingIndicator(thinkingText = uiState.thinkingText) }
+                    }
+                    
+                    if (uiState.isStreaming && !uiState.isThinking && uiState.streamedText.isEmpty()) {
+                        item { TypingIndicator() }
+                    }
+                    
+                    if (uiState.streamedText.isNotEmpty()) {
+                        item { AIMessageContent(text = uiState.streamedText) }
+                    }
+                    
+                    item { Spacer(modifier = Modifier.height(8.dp)) }
                 }
             }
         }

@@ -11,13 +11,27 @@ import com.dsagent.ui.theme.*
 
 @Composable
 fun UserMessageBubble(text: String) {
-    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.End
+    ) {
         Surface(
-            modifier = Modifier.widthIn(max = 320.dp),
+            modifier = Modifier.widthIn(max = 340.dp),
             color = LightGray,
-            shape = RoundedCornerShape(16.dp, 16.dp, 16.dp, 4.dp)
+            shape = RoundedCornerShape(
+                topStart = 16.dp,
+                topEnd = 16.dp,
+                bottomStart = 16.dp,
+                bottomEnd = 4.dp
+            ),
+            shadowElevation = 1.dp
         ) {
-            Text(text, modifier = Modifier.padding(12.dp), style = MaterialTheme.typography.bodyMedium, color = DarkText)
+            Text(
+                text = text,
+                modifier = Modifier.padding(12.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = DarkText
+            )
         }
     }
 }
